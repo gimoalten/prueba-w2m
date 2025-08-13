@@ -1,0 +1,22 @@
+services:
+  api:
+    build: .
+    command: python ./starships_project/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - /starships
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: starships
+      POSTGRES_USER: starships
+      POSTGRES_PASSWORD: starships
+    volumes:
+      - pgdata_dev:/var/lib/postgresql/data
+
+volumes:
+  pgdata_dev:
