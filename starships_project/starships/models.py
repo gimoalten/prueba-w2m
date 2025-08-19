@@ -1,7 +1,9 @@
-# starships/models.py
+""" models.py """
 from django.db import models
 
+
 class Starship(models.Model):
+    """ Starship """
     name = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
     manufacturer = models.CharField(max_length=200, blank=True)

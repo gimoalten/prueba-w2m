@@ -1,11 +1,13 @@
-# starships/views.py
+""" views.py """
 import logging
+
+from django.db.models import Q
 from rest_framework import generics
 from rest_framework.exceptions import NotFound
-from django.db.models import Q
 
 from .models import Starship
 from .serializers import StarshipSerializer
+from .utils import log_negative_id
 
 logger = logging.getLogger(__name__)
 
@@ -28,15 +30,16 @@ class StarshipListCreateView(generics.ListCreateAPIView):
 
 
 # --- Recuperar, actualizar, eliminar ---
-class StarshipRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+class StarshipDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     GET: Recuperar nave por ID (log si ID negativo).
-    PUT/PATCH: Modificar nave.
-    DELETE: Eliminar nave.
+    PUT/PATCH: Modificar nave (log si ID negativo).
+    DELETE: Eliminar nave (log si ID negativo).
     """
     queryset = Starship.objects.all()
     serializer_class = StarshipSerializer
 
+    @log_negative_id
     def get_object(self):
         obj = super().get_object()
         if not obj:

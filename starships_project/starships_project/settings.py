@@ -19,13 +19,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-2wc-m^0p80!*yy(4-4*ng*a*&#z3ku7+d3s)j)k4y#v=uw+u^^'
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key-change-me")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get("DEBUG", default=0))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',  # Add Django Rest Framework
     'starships',  # Add our app
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -75,25 +77,16 @@ WSGI_APPLICATION = 'starships_project.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 
-
-if os.getenv("DATABASE_ENGINE") == "postgresql":
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("POSTGRES_DB", "starships"),
-            "USER": os.getenv("POSTGRES_USER", "starships"),
-            "PASSWORD": os.getenv("POSTGRES_PASSWORD", "starships"),
-            "HOST": os.getenv("POSTGRES_HOST", "db"),
-            "PORT": os.getenv("POSTGRES_PORT", "5432"),
-        }
-    }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+DATABASES = {
+     'default': {
+         'ENGINE': f'django.db.backends.{os.getenv('DATABASE_ENGINE', 'sqlite3')}',
+         'NAME': os.getenv('DATABASE_NAME', 'starships'),
+         'USER': os.getenv('DATABASE_USERNAME', 'starships'),
+         'PASSWORD': os.getenv('DATABASE_PASSWORD', 'starships'),
+         'HOST': os.getenv('DATABASE_HOST', ''),
+         'PORT': os.getenv('DATABASE_PORT', str(5432)),
+     }
+ }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -146,6 +139,15 @@ REST_FRAMEWORK = {
     ],
 
     'EXCEPTION_HANDLER': 'starships_project.exception_handler.custom_exception_handler',
+
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Starships API",
+    "DESCRIPTION": "API para gestionar naves espaciales",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 CACHES = {
@@ -153,4 +155,3 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     }
 }
-

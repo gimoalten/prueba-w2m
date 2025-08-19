@@ -1,0 +1,21 @@
+# Entornos virtuales
+.venv
+env
+venv
+
+# Archivos compilados / cachés
+__pycache__/
+*.pyc
+*.pyo
+
+# Git
+.git
+.gitignore
+
+# Archivos de editor
+.vscode
+.idea
+
+# Otros innecesarios
+*.log
+*.sqlite3

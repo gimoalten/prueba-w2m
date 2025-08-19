@@ -6,6 +6,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      db:
+        image: postgres:17
+        env:
+          POSTGRES_USER: starships
+          POSTGRES_PASSWORD: starships
+          POSTGRES_DB: starships
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U starships"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
 
@@ -19,4 +34,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Check linting
+        run: |
+          export DJANGO_SETTINGS_MODULE=starships_project.starships_project.settings
+          export PYTHONPATH=$PWD/starships_project
+          pylint starships_project/ --load-plugins pylint_django
       - name: Run tests
+        run: |
+          export DATABASE_HOST=localhost
+          coverage run --source='.' starships_project/manage.py test starships
+          coverage report  
+

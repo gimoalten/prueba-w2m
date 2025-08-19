@@ -1,0 +1,13 @@
+[MASTER]
+load-plugins = pylint_django
+ignore=migrations
+ignore-patterns=manage.py
+
+[MESSAGES CONTROL]
+disable =
+    invalid-name,
+    too-few-public-methods,
+    inconsistent-return-statements
+
+[DJANGO]
+django-settings-module = starships_project.starships_project.settings
